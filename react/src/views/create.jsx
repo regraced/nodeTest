@@ -27,7 +27,6 @@ function Create() {
         <div id="bigTitle">AI OH</div>
         <h1>An AI Card Game for Small Businesses</h1>
       </div>
-      <div id="center">
         <input
           type="text"
           placeholder="Enter Nickname"
@@ -36,7 +35,6 @@ function Create() {
         <button className="btn btn-light custom-button1" onClick={startGame}>
           Start Game
         </button>
-      </div>
     </div>
   );
 }
