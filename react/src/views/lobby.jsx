@@ -8,14 +8,16 @@ function Lobby() {
   const [players, setPlayers] = useState([]);
 
   useEffect(() => {
-    // Frontend handling for updating player list
+    // Fetch player list
     socket.emit("getPlayers", roomCode);
-    const handleUpdatePlayers = (playerList) => {
-      setPlayers(playerList);
-    };
-    socket.on("updatePlayers", handleUpdatePlayers);
+
+    // Update player list
+    socket.on("updatePlayers", (players) => {
+      setPlayers(players);
+    });
+
     return () => {
-      socket.off("updatePlayers", handleUpdatePlayers);
+      socket.off("updatePlayers");
     };
   }, [roomCode, socket]);
 

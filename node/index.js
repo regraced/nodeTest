@@ -35,38 +35,27 @@ io.of("/").adapter.on("join-room", (room, id) => {
   console.log(`socket ${id} has joined room ${room}`);
 });
 
-let connectedUsers = 0;
 io.on("connection", (socket) => {
-  connectedUsers++;
-  socket.userID = connectedUsers;
-  socket.emit("yourID", socket.userID);
-
-  io.emit("connectedClients", io.of("/").sockets.size);
+  console.log("Client connected");
+  socket.emit("connectedClients", io.of("/").sockets.size);
 
   socket.on("createRoom", async () => {
     const roomCode = generateRoomCode();
     try {
-      const reply = await redis.sadd("roomCodes", roomCode);
+      const reply = await redis.sadd("active_rooms", roomCode);
       if (reply === 1) {
+        await redis.hset(
+          `room:${roomCode}:scores`,
+          "aiScore",
+          0,
+          "humanScore",
+          0
+        );
+        socket.roomCode = roomCode;
         socket.join(roomCode);
         socket.emit("roomCreated", roomCode);
       } else {
-        console.warn("Room code already exists, regenerating...");
-      }
-    } catch (err) {
-      console.error("Redis error", err);
-    }
-  });
-
-  socket.on("joinRoom", async (roomCode) => {
-    try {
-      const exists = await redis.sismember("roomCodes", roomCode);
-      if (exists) {
-        socket.join(roomCode);
-        socket.roomCode = roomCode; // Set the roomCode in the socket
-        socket.emit("roomJoined", roomCode);
-      } else {
-        console.warn(`Room code ${roomCode} does not exist.`);
+        console.warn("Room code already exists, try again.");
       }
     } catch (err) {
       console.error("Redis error", err);
@@ -75,8 +64,20 @@ io.on("connection", (socket) => {
 
   socket.on("setNickname", async (data) => {
     const { roomCode, nickname } = data;
+    const playerUUID = socket.id;
     try {
-      await redis.hset(roomCode, socket.id, nickname);
+      await redis.hset(
+        `player:${playerUUID}`,
+        "roomCode",
+        roomCode,
+        "playerName",
+        nickname,
+        "playerScore",
+        0
+      );
+      console.log(`Player ${nickname} joined room ${roomCode}`);
+
+      await redis.sadd(`room:${roomCode}:players`, playerUUID);
     } catch (err) {
       console.error("Redis error", err);
     }
@@ -84,23 +85,48 @@ io.on("connection", (socket) => {
 
   socket.on("getPlayers", async (roomCode) => {
     try {
-      const playerList = await redis.hvals(roomCode);
-      io.to(roomCode).emit("updatePlayers", playerList); // Emit to all clients in the same room
+      const playerUUIDs = await redis.smembers(`room:${roomCode}:players`);
+      let playerList = [];
+
+      for (const uuid of playerUUIDs) {
+        const playerName = await redis.hget(`player:${uuid}`, "playerName");
+        console.log(`Retrieved nickname for ${uuid}:`, playerName);
+        playerList.push(playerName);
+      }
+
+      io.to(roomCode).emit("updatePlayers", playerList);
     } catch (err) {
       console.error("Redis error", err);
     }
   });
 
   socket.on("disconnect", async () => {
-    connectedUsers--;
-    console.log("Client disconnected");
-
+    const playerUUID = socket.id;
     try {
-      const roomCode = socket.roomCode;
-      await redis.hdel(roomCode, socket.id);
-      const playerList = await redis.hvals(roomCode);
+      const roomCode = await redis.hget(`player:${playerUUID}`, "roomCode");
+      if (roomCode) {
+        await redis.srem(`room:${roomCode}:players`, playerUUID);
 
-      io.to(roomCode).emit("updatePlayers", playerList);
+        const remainingPlayersCount = await redis.scard(
+          `room:${roomCode}:players`
+        );
+
+        if (remainingPlayersCount === 0) {
+          const aiScore = await redis.hget(
+            `room:${roomCode}:scores`,
+            "aiScore"
+          );
+          const humanScore = await redis.hget(
+            `room:${roomCode}:scores`,
+            "humanScore"
+          );
+
+          await redis.del(`room:${roomCode}:scores`);
+          await redis.del(`room:${roomCode}:players`);
+          await redis.srem("active_rooms", roomCode);
+        }
+      }
+      await redis.del(`player:${playerUUID}`);
     } catch (err) {
       console.error("Redis error", err);
     }

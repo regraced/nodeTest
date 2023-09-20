@@ -12,7 +12,7 @@ function Create() {
     setNickname(e.target.value);
   };
 
-  const startGame = () => {
+  const joinLobby = () => {
     if (nickname) {
       socket.emit("setNickname", { roomCode, nickname });
       nav("/lobby");
@@ -33,7 +33,7 @@ function Create() {
           placeholder="Enter Nickname"
           onChange={handleChange}
         />
-        <button className="btn btn-light custom-button1" onClick={startGame}>
+        <button className="btn btn-light custom-button1" onClick={joinLobby}>
           Start Game
         </button>
       </div>
