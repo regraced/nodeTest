@@ -2,10 +2,12 @@ import { useContext, useState, useEffect } from "react";
 import { WebSocketContext } from "../WebSocketContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/styles.css";
+import { useNavigate } from "react-router-dom";
 
 function Lobby() {
   const { socket, roomCode } = useContext(WebSocketContext);
-  const [players, setPlayers] = useState([]);
+  const [ players, setPlayers ] = useState([]);
+  const nav = useNavigate();
 
   useEffect(() => {
     // Fetch player list
@@ -21,6 +23,11 @@ function Lobby() {
     };
   }, [roomCode, socket]);
 
+  const startGame = () => {
+    socket.emit("startGame", roomCode);
+    nav("/game");
+  };
+
   return (
     <div className="stack-elements">
       <div id="titleContainer">
@@ -35,6 +42,9 @@ function Lobby() {
             <li key={player}>{player}</li>
           ))}
         </ul>
+        <button className="btn btn-light custom-button1" onClick={startGame}>
+          Start Game
+        </button>
       </div>
     </div>
   );

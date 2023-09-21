@@ -8,7 +8,7 @@
 # Supplemented with Docker in WSL2 for containerization and deployment
 # Vite for build and development
 # React-Bootstrap + CSS for theming
-
+# Github for version control
 
 # Redis #
 redis => 

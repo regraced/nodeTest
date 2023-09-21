@@ -100,6 +100,21 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("startGame", async (roomCode) => {
+    try {
+      const playerUUIDs = await redis.smembers(`room:${roomCode}:players`);
+      for (const uuid of playerUUIDs) {
+        const playerName = await redis.hget(`player:${uuid}`, "playerName");
+        console.log(`Retrieved nickname for ${uuid}:`, playerName);
+        playerList.push(playerName);
+      }
+
+      io.to(roomCode).emit("updatePlayers", playerList);
+    } catch (err) {
+      console.error("Redis error", err);
+    }
+  });
+
   socket.on("disconnect", async () => {
     const playerUUID = socket.id;
     try {
