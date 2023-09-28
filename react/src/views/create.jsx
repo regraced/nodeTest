@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 function Create() {
   const { socket, roomCode } = React.useContext(WebSocketContext);
-  const [nickname, setNickname] = React.useState("");
+  const [ nickname, setNickname ] = React.useState("");
   const nav = useNavigate();
 
   const handleChange = (e) => {
@@ -24,8 +24,8 @@ function Create() {
   return (
     <div className="stack-elements">
       <div id="titleContainer">
-        <div id="bigTitle">AI OH</div>
-        <h1>An AI Card Game for Small Businesses</h1>
+        <div id="bigTitle"></div>
+        <h1></h1>
       </div>
         <input
           type="text"

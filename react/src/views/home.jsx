@@ -3,7 +3,6 @@ import { WebSocketContext } from "../WebSocketContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form } from "react-bootstrap";
 import "../styles/styles.css";
-import "../assets/bgMove";
 import { useNavigate } from "react-router-dom";
 
 function Home() {
@@ -36,11 +35,10 @@ function Home() {
   return (
     <div className="stack-elements">
       <div id="titleContainer">
-        <div id="bigTitle">AI OH</div>
-        <h1>An AI Card Game for Small Businesses</h1>
+        <div id="bigTitle"></div>
       </div>
       <div id="center" className="stacked-buttons">
-        <Button className="btn btn-light custom-button1" onClick={createRoom}>
+        <Button variant="outline custom-button1" onClick={createRoom}>
           Create Room
         </Button>
         <Form.Control
@@ -51,7 +49,7 @@ function Home() {
           maxLength="5"
           onChange={handleChange}
         />
-        <Button className="btn btn-light custom-button1" onClick={joinRoom}>
+        <Button variant="outline custom-button2" onClick={joinRoom}>
           Join Room
         </Button>
       </div>
