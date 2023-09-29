@@ -67,7 +67,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Join room
   socket.on("joinRoom", async (roomCode) => {
     try {
       const reply = await redis.sismember("active_rooms", roomCode);
@@ -128,31 +127,29 @@ io.on("connection", (socket) => {
       await redis.hset(`room:${roomCode}`, "judge", judge);
       io.to(roomCode).emit("gameStarted", judge);
       io.to(roomCode).emit("judge", judge);
-  
-      let playerList = [];  // Declare playerList here
+
+      let playerList = [];
       for (const uuid of playerUUIDs) {
         const playerName = await redis.hget(`player:${uuid}`, "playerName");
         console.log(`Retrieved nickname for ${uuid}:`, playerName);
         playerList.push(playerName);
       }
-  
+
       io.to(roomCode).emit("updatePlayers", playerList);
     } catch (err) {
       console.error("Redis error", err);
     }
   });
-  
 
   socket.on("joinJudge", async (roomCode) => {
     try {
       socket.join(roomCode);
       socket.emit("joinedJudge", roomCode);
-      console.log(`Judge joined room: ${roomCode}`); // Add this line
+      console.log(`Judge joined room: ${roomCode}`);
     } catch (err) {
       console.error("Redis error", err);
     }
   });
-
 
   socket.on("judgeDecision", async (data) => {
     const { roomCode, decision } = data;

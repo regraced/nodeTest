@@ -6,14 +6,11 @@ import { useNavigate } from "react-router-dom";
 
 function Lobby() {
   const { socket, startGame, roomCode } = useContext(WebSocketContext);
-  const [ players, setPlayers ] = useState([]);
+  const [players, setPlayers] = useState([]);
   const nav = useNavigate();
 
   useEffect(() => {
-    // Fetch player list
     socket.emit("getPlayers", roomCode);
-
-    // Update player list
     socket.on("updatePlayers", (players) => {
       setPlayers(players);
     });

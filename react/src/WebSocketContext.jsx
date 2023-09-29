@@ -25,7 +25,9 @@ const WebSocketProvider = ({ children }) => {
   };
 
   return (
-    <WebSocketContext.Provider value={{ socket, roomCode, setRoomCode, startGame }}>
+    <WebSocketContext.Provider
+      value={{ socket, roomCode, setRoomCode, startGame }}
+    >
       {children}
     </WebSocketContext.Provider>
   );

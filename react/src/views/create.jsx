@@ -1,7 +1,7 @@
 import React from "react";
 import { WebSocketContext } from "../WebSocketContext";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/styles.css"
+import "../styles/styles.css";
 import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 

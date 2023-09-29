@@ -5,13 +5,12 @@ import { useNavigate } from "react-router-dom";
 
 function Game() {
   const { socket, roomCode } = React.useContext(WebSocketContext);
-  const [ players, setPlayers ] = React.useState([]);
-  const [ judge, setJudge ] = React.useState("");
+  const [players, setPlayers] = React.useState([]);
+  const [judge, setJudge] = React.useState("");
 
-  // Create a judge view and join judge channel in socket.io
   React.useEffect(() => {
-    console.log("Socket:", socket); // Check if socket is defined and connected
-    console.log("Room code:", roomCode); // Check if roomCode is as expected
+    console.log("Socket:", socket);
+    console.log("Room code:", roomCode);
 
     socket.emit("joinJudge", roomCode);
     socket.on("judge", (judge) => {
@@ -23,7 +22,6 @@ function Game() {
     };
   }, [roomCode, socket]);
 
-
   return (
     <div>
       {socket.id === judge ? (
@@ -33,6 +31,6 @@ function Game() {
       )}
     </div>
   );
-}  
+}
 
 export default Game;
