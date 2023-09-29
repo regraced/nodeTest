@@ -5,7 +5,7 @@ import "../styles/styles.css";
 import { useNavigate } from "react-router-dom";
 
 function Lobby() {
-  const { socket, roomCode } = useContext(WebSocketContext);
+  const { socket, startGame, roomCode } = useContext(WebSocketContext);
   const [ players, setPlayers ] = useState([]);
   const nav = useNavigate();
 
@@ -23,20 +23,14 @@ function Lobby() {
     };
   }, [roomCode, socket]);
 
-  const startGame = () => {
-    socket.emit("startGame", roomCode);
-    nav("/game");
-  };
-
   return (
     <div className="stack-elements">
       <div id="titleContainer">
-        <div id="bigTitle">AI OH</div>
-        <h1>Lobby</h1>
+        <div id="smallLogo"></div>
         <h1>Room Code: {roomCode}</h1>
       </div>
       <div id="center">
-        <h2>Players:</h2>
+        <h2 style={{ textDecoration: "underline" }}>Players</h2>
         <ul>
           {players.map((player) => (
             <li key={player}>{player}</li>

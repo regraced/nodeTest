@@ -1,68 +1,80 @@
+/* Global Settings */
+body {
+    background-color: #2E3E50;
+    color: white;
+    margin: 0;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Text Elements */
+.room-code-display, h1 {
+    text-align: center;
+    font-weight: bold;
+}
 
 .room-code-display {
-    text-align: center;
     font-size: x-large;
-    font-weight: bold;
     padding-top: 10%;
 }
 
-
-body {
-    background-color: rgba(129,127,189,255);
-    color: white;
-    margin: 0%;
-    background-size: cover;
-    background-position: center;
-    height: 100%;
+h1 {
+    font-size: medium;
 }
 
-.stack-elements {
+/* Layout and Positioning */
+.stack-elements, .stacked-buttons {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 16px;
 }
 
-h1 {
+#center {
     text-align: center;
-    font-size: medium;
+    position: relative;
+    padding: 20px;
 }
 
-/* Set the parent container to relative positioning */
 #titleContainer {
     position: relative;
     text-align: center;
     background-color: transparent;
 }
 
-/* Use absolute positioning for #bigTitle */
-#bigTitle {
-    position: absolute;
-    font-family: 'copperplate';
-    font-size: 400%;
-    text-align: center;
-    font-weight: bold;
-    text-decoration: underline;
+#bigLogo {
+    position: relative;
     background-color: transparent;
     display: inline-block;
-    width: 400px; /* Set a fixed width */
-    height: 350px; /* Set a fixed height */
+    width: 400px;
+    height: 350px;
     background-image: url("../assets/aioh logo.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center;
-    
     left: 50%;
     transform: translate(-50%);
+}
 
+#smallLogo {
+    position: relative;
+    position: relative;
+    background-color: transparent;
+    display: inline-block;
+    width: 200px;
+    height: 150px;
+    background-image: url("../assets/aioh logo.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    left: 50%;
+    transform: translate(-50%);
 }
 
 
-
-
-
-.custom-button1, .custom-button2,
-.input1 {
+/* Buttons and Inputs */
+.custom-button1, .custom-button2, .input1 {
     color: white;
     width: 200px;
     font-size: 16px;
@@ -75,23 +87,23 @@ h1 {
     transition-duration: 0.4s;
 }
 
-.custom-button1 {
-    background-color: rgb(255, 255, 255,.2);
-    border-color: #75e5a5;
+.custom-button1, .custom-button2 {
+    background-color: rgba(255, 255, 255, 0.2);
     border-width: 3px;
     font-weight: bold;
     height: 50px;
 }
+
+.custom-button1 {
+    border-color: #75e5a5;
+}
+
 .custom-button1:hover {
     background-color: #75e5a5;
 }
 
 .custom-button2 {
-    background-color: rgb(255, 255, 255,.2);
     border-color: #e58975;
-    border-width: 3px;
-    font-weight: bold;
-    height: 50px;
 }
 
 .custom-button2:hover {
@@ -100,31 +112,11 @@ h1 {
 
 .input1 {
     color: black;
-    width: 200px;
-    height: 30px;
-    padding: 5px 12px; /* Adjusted padding for better alignment */
     border: none;
     border-radius: 12px;
-    font-size: 16px;
-    text-align: center;
 }
 
-#center {
-    text-align: center;
-    position: relative;
-    transform: translate(0%,150%);
-    padding: 20px;
+ul {
+    list-style-type: none;
+    padding-left: 0;
 }
-
-.stacked-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-
-#titleContainer * {
-    background-color: inherit;
-}
-

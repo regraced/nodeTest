@@ -35,7 +35,7 @@ function Home() {
   return (
     <div className="stack-elements">
       <div id="titleContainer">
-        <div id="bigTitle"></div>
+        <div id="bigLogo"></div>
       </div>
       <div id="center" className="stacked-buttons">
         <Button variant="outline custom-button1" onClick={createRoom}>

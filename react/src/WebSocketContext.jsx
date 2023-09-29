@@ -1,4 +1,5 @@
 import React, { createContext, useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 
 const endpoint = "http://localhost:8000";
@@ -17,8 +18,14 @@ const WebSocketProvider = ({ children }) => {
     };
   }, []);
 
+  const startGame = (roomCode) => {
+    if (socketRef.current) {
+      socketRef.current.emit("startGame", roomCode);
+    }
+  };
+
   return (
-    <WebSocketContext.Provider value={{ socket, roomCode, setRoomCode }}>
+    <WebSocketContext.Provider value={{ socket, roomCode, setRoomCode, startGame }}>
       {children}
     </WebSocketContext.Provider>
   );
