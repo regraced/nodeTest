@@ -10,13 +10,30 @@ function Lobby() {
   const nav = useNavigate();
 
   useEffect(() => {
+    if (!socket || !roomCode) {
+      return;
+    }
+
+    // Function to handle reconnection
+    const handleReconnect = () => {
+      socket.emit("getPlayers", roomCode);
+    };
+
+    // Emit getPlayers to get the initial list of players
     socket.emit("getPlayers", roomCode);
-    socket.on("updatePlayers", (players) => {
-      setPlayers(players);
+
+    // Listen for updates to the list of players
+    socket.on("updatePlayers", (updatedPlayers) => {
+      setPlayers(updatedPlayers);
     });
 
+    // Listen for reconnection event to refresh list
+    socket.on("reconnect", handleReconnect);
+
+    // Cleanup
     return () => {
       socket.off("updatePlayers");
+      socket.off("reconnect", handleReconnect);
     };
   }, [roomCode, socket]);
 

@@ -6,6 +6,9 @@ const Redis = require("ioredis");
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
+  reconnection: true,
+  reconnectionAttempts: 10,
+  reconnectionDelay: 1000,
   cors: {
     origin: "*",
     methods: ["GET", "POST", "OPTIONS"],
@@ -188,37 +191,43 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("reconnect", async () => {
+    const playerUUID = socket.id;
+    // Check if this player is marked as disconnected
+    const roomCode = await redis.get(`disconnected:${playerUUID}`);
+    if (roomCode) {
+      // Restore player to the room
+      await redis.sadd(`room:${roomCode}:players`, playerUUID);
+      await redis.del(`disconnected:${playerUUID}`);
+      socket.join(roomCode);
+  
+      // Emit the updated list of players
+      const playerUUIDs = await redis.smembers(`room:${roomCode}:players`);
+      let playerList = [];
+  
+      for (const uuid of playerUUIDs) {
+        const playerName = await redis.hget(`player:${uuid}`, "playerName");
+        playerList.push(playerName);
+      }
+  
+      io.to(roomCode).emit("updatePlayers", playerList);
+    }
+  });
+  
   socket.on("disconnect", async () => {
     const playerUUID = socket.id;
     try {
       const roomCode = await redis.hget(`player:${playerUUID}`, "roomCode");
       if (roomCode) {
+        // Instead of removing the player immediately, mark them as disconnected
         await redis.srem(`room:${roomCode}:players`, playerUUID);
-
-        const remainingPlayersCount = await redis.scard(
-          `room:${roomCode}:players`
-        );
-
-        if (remainingPlayersCount === 0) {
-          const aiScore = await redis.hget(
-            `room:${roomCode}:scores`,
-            "aiScore"
-          );
-          const humanScore = await redis.hget(
-            `room:${roomCode}:scores`,
-            "humanScore"
-          );
-
-          await redis.del(`room:${roomCode}:scores`);
-          await redis.del(`room:${roomCode}:players`);
-          await redis.srem("active_rooms", roomCode);
-        }
+        await redis.setex(`disconnected:${playerUUID}`, 60, roomCode); // Mark as disconnected with 60-second expiration
       }
-      await redis.del(`player:${playerUUID}`);
     } catch (err) {
       console.error("Redis error", err);
     }
   });
+  
 });
 
 const PORT = 3000;
