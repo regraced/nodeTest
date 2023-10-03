@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { WebSocketContext } from "../WebSocketContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form } from "react-bootstrap";
@@ -10,22 +10,43 @@ function Home() {
   const { socket, setRoomCode } = React.useContext(WebSocketContext);
   const [room, setRoom] = React.useState("");
 
-  const createRoom = () => {
-    socket.emit("createRoom");
-    socket.on("roomCreated", (code) => {
+  useEffect(() => {
+    console.log('Socket connected')
+    const handleRoomCreated = (code) => {
       console.log("Your room code:", code);
       setRoomCode(code);
       nav("/create");
-    });
+    };
+
+    const handleRoomJoined = (code) => {
+      console.log("Your room code:", code);
+      setRoomCode(code);
+      nav("/create");
+    };
+
+    if (socket) {
+      socket.on("roomCreated", handleRoomCreated);
+      socket.on("roomJoined", handleRoomJoined);
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("roomCreated", handleRoomCreated);
+        socket.off("roomJoined", handleRoomJoined);
+      }
+    };
+  }, [socket, nav, setRoomCode]);
+
+  const createRoom = () => {
+    if (socket) {
+      socket.emit("createRoom");
+    }
   };
 
   const joinRoom = () => {
-    socket.emit("joinRoom", room);
-    socket.on("roomJoined", (code) => {
-      console.log("Your room code:", code);
-      setRoomCode(code);
-      nav("/create");
-    });
+    if (socket) {
+      socket.emit("joinRoom", room);
+    }
   };
 
   const handleChange = (e) => {

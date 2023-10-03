@@ -5,37 +5,34 @@ import "../styles/styles.css";
 import { useNavigate } from "react-router-dom";
 
 function Lobby() {
-  const { socket, startGame, roomCode } = useContext(WebSocketContext);
+  const { socket, roomCode } = useContext(WebSocketContext);
   const [players, setPlayers] = useState([]);
   const nav = useNavigate();
 
   useEffect(() => {
     if (!socket || !roomCode) {
+      console.log('Socket: ', socket)
+      console.log('Room code: ' + roomCode)
       return;
     }
-
-    // Function to handle reconnection
-    const handleReconnect = () => {
-      socket.emit("getPlayers", roomCode);
-    };
-
-    // Emit getPlayers to get the initial list of players
+    console.log('Socket: ', socket)
+    
     socket.emit("getPlayers", roomCode);
 
-    // Listen for updates to the list of players
     socket.on("updatePlayers", (updatedPlayers) => {
       setPlayers(updatedPlayers);
     });
 
-    // Listen for reconnection event to refresh list
-    socket.on("reconnect", handleReconnect);
-
-    // Cleanup
     return () => {
       socket.off("updatePlayers");
-      socket.off("reconnect", handleReconnect);
     };
   }, [roomCode, socket]);
+
+  // Start game on button click then nav to /game
+  const startGame = () => {
+    socket.emit("startGame", roomCode);
+    nav("/game");
+  };
 
   return (
     <div className="stack-elements">

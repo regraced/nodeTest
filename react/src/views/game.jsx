@@ -9,9 +9,6 @@ function Game() {
   const [judge, setJudge] = React.useState("");
 
   React.useEffect(() => {
-    console.log("Socket:", socket);
-    console.log("Room code:", roomCode);
-
     socket.emit("joinJudge", roomCode);
     socket.on("judge", (judge) => {
       setJudge(judge);
